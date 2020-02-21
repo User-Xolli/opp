@@ -1,0 +1,17 @@
+24000, 4e-12 and fix and #pragma omp parallel for:
+1 threads: 40.787310
+2 threads: 20.805662
+3 threads: 14.365293
+4 threads: 11.302296
+
+24000, 4e-12 and fix and #pragma omp parallel:
+1 threads: 39.575374
+2 threads: 20.846210
+3 threads: 14.423891
+4 threads: 11.262644
+
+24000, 4e-12 and fix and #pragma omp (no #pragma omp for)):
+1 threads: 43.9727317
+2 threads: inf
+3 threads:
+4 threads:
