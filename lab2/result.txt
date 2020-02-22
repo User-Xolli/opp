@@ -15,3 +15,14 @@
 2 threads: inf
 3 threads:
 4 threads:
+
+schedule:
+static, 1: 11.396243
+static, 1000: 11.313281
+static, 6000: 11.333309
+dynamic, 1: 11.386942
+dynamic, 1000: 11.308063
+dynamic, 6000: 11.300500
+guided, 1: 11.205063
+guided, 1000: 12.095482
+guided, 6000: 11.289981
