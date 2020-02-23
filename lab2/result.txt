@@ -1,28 +1,65 @@
 24000, 4e-12 and fix and #pragma omp parallel for:
-1 threads: 40.787310
-2 threads: 20.805662
-3 threads: 14.365293
-4 threads: 11.302296
+1 threads: 40,787310
+2 threads: 20,805662
+3 threads: 14,365293
+4 threads: 11,302296
 
 24000, 4e-12 and fix and #pragma omp parallel:
-1 threads: 39.575374
-2 threads: 20.846210
-3 threads: 14.423891
-4 threads: 11.262644
+1 threads: 39,575374
+2 threads: 20,846210
+3 threads: 14,423891
+4 threads: 11,262644
 
 24000, 4e-12 and fix and #pragma omp (no #pragma omp for)):
-1 threads: 43.9727317
-2 threads: inf
-3 threads:
-4 threads:
+1 threads: 43,9727317
+2 threads: -1
+3 threads: 1552,473596
+4 threads: 571,870619
 
 schedule:
-static, 1: 11.396243
-static, 1000: 11.313281
-static, 6000: 11.333309
-dynamic, 1: 11.386942
-dynamic, 1000: 11.308063
-dynamic, 6000: 11.300500
-guided, 1: 11.205063
-guided, 1000: 12.095482
-guided, 6000: 11.289981
+static, 1	11,396243
+static, 1000	11,313281
+static, 6000	11,333309
+dynamic, 1	11,386942
+dynamic, 1000	11,308063
+dynamic, 6000	11,300500
+guided, 1	11,205063
+guided, 1000	12,095482
+guided, 6000	11,289981
+
+profile:
+1 thread:
+time_mult_1: 0,001706
+time_mult_2: 40,111124
+time_zero_matrix: 0,000073
+time_calc_y: 0,000657
+time_approximation: 0,000361
+time_next_step: 0,000285
+All time: 39,359334
+
+2 thread:
+time_mult_1: 0,001092
+time_mult_2: 21,066714
+time_zero_matrix: 0,000047
+time_calc_y: 0,000369
+time_approximation: 0,000270
+time_next_step: 0,000192
+All time: 20,675985
+
+3 thread:
+time_mult_1: 0,000842
+time_mult_2: 14,824474
+time_zero_matrix: 0,000035
+time_calc_y: 0,000304
+time_approximation: 0,000277
+time_next_step: 0,000174
+All time: 14,545456
+
+4 thread:
+time_mult_1: 0,000789
+time_mult_2: 11,508306
+time_zero_matrix: 0,000029
+time_calc_y: 0,000282
+time_approximation: 0,000248
+time_next_step: 0,000162
+All time: 11,296501
