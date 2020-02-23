@@ -8,7 +8,6 @@
 #define EPSILON (4e-12)
 #define THREADS (4)
 
-
 int create_matrix(struct Matrix *matrix, unsigned int height, unsigned int width) {
   matrix->height = height;
   matrix->width = width;
@@ -22,16 +21,14 @@ int mult_matrix(struct Matrix a, struct Matrix b, struct Matrix result) {
   if (a.width != b.height || result.height != a.height || result.width != b.width) {
     return -1;
   }
-  omp_set_num_threads(THREADS);
-#pragma omp parallel for
+#pragma omp for
   for (unsigned int j = 0; j < result.height; ++j) {
     for (unsigned int i = 0; i < result.width; ++i) {
       result.data[i * result.width + j] = 0;
     }
   }
 
-  omp_set_num_threads(THREADS);
-#pragma omp parallel for
+#pragma omp for
   for (unsigned int i = 0; i < result.height; ++i) {
     for (unsigned int j = 0; j < result.width; ++j) {
       for (unsigned int r = 0; r < a.width; ++r) {
@@ -55,8 +52,7 @@ int print_matrix(struct Matrix a, FILE *out) {
 }
 
 static void zero_matrix(struct Matrix a) {
-  omp_set_num_threads(THREADS);
-#pragma omp parallel for
+#pragma omp for
   for (unsigned int j = 0; j < a.height; ++j) {
     for (unsigned int i = 0; i < a.width; ++i) {
       a.data[i * a.width + j] = 0;
@@ -69,8 +65,7 @@ static int calc_y(const struct Matrix a, const struct Matrix b, const struct Mat
   if (mult_matrix(a, x, y) < 0) {
     return -1;
   }
-  omp_set_num_threads(THREADS);
-#pragma omp parallel for
+#pragma omp for
   for (unsigned int j = 0; j < y.height; ++j) {
     for (unsigned int i = 0; i < y.width; ++i) {
       y.data[i * y.width + j] -= b.data[i * b.width + j];
@@ -84,8 +79,11 @@ static int scalar_product(const struct Matrix a, const struct Matrix b, double *
     return -1;
   }
   *result = 0;
-  for (unsigned int i = 0; i < a.height; ++i) {
-    *result += a.data[i] * b.data[i];
+#pragma omp critical
+  {
+    for (unsigned int i = 0; i < a.height; ++i) {
+      *result += a.data[i] * b.data[i];
+    }
   }
   return 0;
 }
@@ -102,8 +100,7 @@ static int calc_t(const struct Matrix a, const struct Matrix y, struct Matrix tm
 
 static double approximation(struct Matrix a, struct Matrix b, struct Matrix x, struct Matrix tmp) {
   mult_matrix(a, x, tmp);
-  omp_set_num_threads(THREADS);
-#pragma omp parallel for
+#pragma omp for
   for (unsigned int i = 0; i < b.height; ++i) {
     tmp.data[i] -= b.data[i];
   }
@@ -125,8 +122,7 @@ static int next_step(const struct Matrix a, const struct Matrix b, struct Matrix
   if (calc_t(a, y, tmp, &t) < 0) {
     return -1;
   }
-  omp_set_num_threads(THREADS);
-#pragma omp parallel for
+#pragma omp for
   for (unsigned int i = 0; i < y.height; ++i) {
     x.data[i] -= t * y.data[i];
   }
@@ -148,9 +144,14 @@ int solve(struct Matrix a, struct Matrix b, struct Matrix x) {
   struct timespec mt1, mt2;
   clock_gettime(CLOCK_REALTIME, &mt1);
 
-  while (approximation(a, b, x, tmp) > EPSILON) {
-    next_step(a, b, x, y, tmp);
+  omp_set_num_threads(THREADS);
+#pragma omp parallel
+  {
+    while (approximation(a, b, x, tmp) > EPSILON) {
+      next_step(a, b, x, y, tmp);
+    }
   }
+
   clock_gettime(CLOCK_REALTIME, &mt2);
   double tt =
       (double)(mt2.tv_sec - mt1.tv_sec) + ((double)(mt2.tv_nsec - mt1.tv_nsec)) / 1000000000;

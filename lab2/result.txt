@@ -1,20 +1,14 @@
 24000, 4e-12 and fix and #pragma omp parallel for:
-1 threads: 40,787310
-2 threads: 20,805662
-3 threads: 14,365293
-4 threads: 11,302296
+1 threads: 38,996378
+2 threads: 20,517386
+3 threads: 14,324744
+4 threads: 11,287305
 
 24000, 4e-12 and fix and #pragma omp parallel:
-1 threads: 39,575374
-2 threads: 20,846210
-3 threads: 14,423891
+1 threads: 39,003985
+2 threads: 20,498079
+3 threads: 14,325495
 4 threads: 11,262644
-
-24000, 4e-12 and fix and #pragma omp (no #pragma omp for)):
-1 threads: 43,9727317
-2 threads: -1
-3 threads: 1552,473596
-4 threads: 571,870619
 
 schedule:
 static, 1	11,396243
