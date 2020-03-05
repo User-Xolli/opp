@@ -98,7 +98,7 @@ static int calc_t(const struct Matrix a, const struct Matrix y, const struct Mat
         scalar_product(tmp, tmp, &denominator) < 0) {
         return -1;
     }
-    if (numerator == 0) {
+    if (denominator < 1e-10) {
         perror("numerator in function \"calc_t\" is 0\n");
         return -1;
     }
@@ -116,7 +116,7 @@ static double approximation(const struct Matrix a, const struct Matrix b, const 
     double numerator, denominator;
     scalar_product(tmp, tmp, &numerator);
     scalar_product(b, b, &denominator);
-    if (numerator == 0) {
+    if (denominator < 1e-10) {
         perror("numerator in function \"approximation\" is 0\n");
         return DBL_MAX;
     }
