@@ -34,24 +34,25 @@ int main(void) {
   FILE *fout = stdout;
   struct Matrix a;
   if (create_matrix(&a, N, N) < 0) {
-    perror("Memory limit\n");
+    perror("Memory limit. Program can't create matrix a\n");
     return 1;
   }
   example_matrix_a(a);
   struct Matrix b;
   if (create_matrix(&b, N, 1) < 0) {
-    perror("Memory limit\n");
+    perror("Memory limit. Program can't create matrix b\n");
     del_matrix(a);
     return 1;
   }
   if (example_matrix_b(b, a) < 0) {
+    perror("Program can't initialize matrix b");
     del_matrix(a);
     del_matrix(b);
     return 1;
   }
   struct Matrix x;
   if (create_matrix(&x, N, 1) < 0) {
-    perror("Memory limit\n");
+    perror("Memory limit. Program can't create matrix x\n");
     del_matrix(a);
     del_matrix(b);
     return 1;

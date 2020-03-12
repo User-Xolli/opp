@@ -98,8 +98,8 @@ static int calc_t(const struct Matrix a, const struct Matrix y, const struct Mat
         scalar_product(tmp, tmp, &denominator) < 0) {
         return -1;
     }
-    if (denominator < 1e-10) {
-        perror("numerator in function \"calc_t\" is 0\n");
+    if (denominator == 0.0) {
+        perror("denominator in function \"calc_t\" is 0.0\n");
         return -1;
     }
     *t = numerator / denominator;
@@ -116,8 +116,8 @@ static double approximation(const struct Matrix a, const struct Matrix b, const 
     double numerator, denominator;
     scalar_product(tmp, tmp, &numerator);
     scalar_product(b, b, &denominator);
-    if (denominator < 1e-10) {
-        perror("numerator in function \"approximation\" is 0\n");
+    if (denominator == 0.0) {
+        perror("denominator in function \"approximation\" is 0.0\n");
         return DBL_MAX;
     }
     return sqrt(numerator / denominator);
@@ -146,12 +146,12 @@ int solve(const struct Matrix a, const struct Matrix b, const struct Matrix x) {
     zero_matrix(x);
     struct Matrix y;
     if (create_matrix(&y, b.height, b.width) < 0) {
-        perror("Memory limit\n");
+        perror("Memory limit. Program can't create matrix y\n");
         return -1;
     }
     struct Matrix tmp;
     if (create_matrix(&tmp, x.height, x.width)) {
-        perror("Memory limit\n");
+        perror("Memory limit. Program can't create matrix tmp\n");
         del_matrix(y);
         return -1;
     }
