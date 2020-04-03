@@ -11,6 +11,7 @@
 #define Y (1)
 #define HELP (2)
 #define AY (3)
+#define AX (4)
 
 void share_matrix(struct Matrix m, int size) {
   int height = m.height / size;
@@ -108,7 +109,6 @@ static int calc_y(struct Matrix a, const struct Matrix b, const struct Matrix x,
 
 static int help_y(const struct Matrix a, const struct Matrix b, const struct Matrix x,
                   struct Matrix y, int rank) {
-//  recv_matrix(b);
   recv_matrix(x);
   y.height = a.height;
   mult_matrix(a, x, y);
@@ -163,21 +163,52 @@ static int help_t (const struct Matrix a, struct Matrix y, const struct Matrix a
   send_matrix(ay, 0, AY);
 }
 
-static double approximation(const struct Matrix a, const struct Matrix b, const struct Matrix x,
-                            const struct Matrix tmp) {
-  
-  mult_matrix(a, x, tmp);
+static double approximation(struct Matrix a, const struct Matrix b, const struct Matrix x,
+                            struct Matrix ax, int size) {
+  share_all_matrix(x, size);
+  a.height /= size;
+  unsigned int ax_height = ax.height;
+  ax.height /= size;
+  if (mult_matrix(a, x, ax) < 0) {
+    printf("approximation mult error\n");
+    return DBL_MAX;
+  }
+  ax.height = ax_height;
+  sync_matrix(ax, size, AX);
   for (unsigned int i = 0; i < b.height; ++i) {
-    tmp.data[i] -= b.data[i];
+    ax.data[i] -= b.data[i];
   }
   double numerator, denominator;
-    scalar_product(tmp, tmp, &numerator);
+    scalar_product(ax, ax, &numerator);
   scalar_product(b, b, &denominator);
   if (denominator == 0.0) {
     perror("denominator in function \"approximation\" is 0.0\n");
     return DBL_MAX;
   }
   return sqrt(numerator / denominator);
+}
+
+static int help_approximation (const struct Matrix a, const struct Matrix b, const struct Matrix x,
+                         const struct Matrix ax) {
+  recv_matrix(x);
+  if (mult_matrix(a, x, ax) < 0) {
+    printf("help_approximation mult error\n");
+    return -1;
+  }
+  send_matrix(ax, 0, AX);
+  return 0;
+}
+
+static int help(struct Matrix a,  const struct Matrix b, const struct Matrix x, struct Matrix y,
+                const struct Matrix ay, const struct Matrix ax, int rank) {
+  help_y(a, b, x, y, rank);
+  if (help_t(a, y, ay, rank) < 0) {
+    return -1;
+  }
+  if (help_approximation(a, b, x, ax) < 0) {
+    return -1;
+  }
+  return 0;
 }
 
 static int next_step(const struct Matrix a, const struct Matrix b, const struct Matrix x,
@@ -261,7 +292,7 @@ int solve(const struct Matrix a, const struct Matrix b, const struct Matrix x, i
   double e = 0.0;
   if (rank == 0) {
       double time_1 = MPI_Wtime();
-      while ((e = approximation(a, b, x, tmp2)) > EPSILON) {
+      while ((e = approximation(a, b, x, tmp2, size)) > EPSILON) {
         if (e == DBL_MAX) {
           dont_help_me(size);
           del_matrix(y);
@@ -282,11 +313,17 @@ int solve(const struct Matrix a, const struct Matrix b, const struct Matrix x, i
     dont_help_me(size);
   }
   else {
+    if (help_approximation(a, b, x, tmp2)) {
+      return -1;
+    }
     while (need_help()) {
-      help_y(a, b, x, y, rank);
-      if (help_t(a, y, tmp, rank) < 0) {
+      if (help(a, b, x, y, tmp, tmp2, rank)) {
         return -1;
       }
+      /*help_y(a, b, x, y, rank);
+      if (help_t(a, y, tmp, rank) < 0) {
+        return -1;
+      }*/
     }
   }
   del_matrix(tmp);

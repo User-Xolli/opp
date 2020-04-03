@@ -1,6 +1,8 @@
 #ifndef PROJECT_MATRIX_H
 #define PROJECT_MATRIX_H
 
+#define N (10000)
+
 #include <stdio.h>
 
 struct Matrix {
