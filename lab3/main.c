@@ -175,6 +175,7 @@ static void factoring_into_2_multiplier(int number, int* p1, int* p2) {
 
 int main(int argc, char **argv) {
   MPI_Init(&argc, &argv);
+  double t1 = MPI_Wtime();
   int ret = 0;
   int size, rank;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
@@ -272,6 +273,8 @@ exit:
   del_matrix(tmp_a);
   del_matrix(tmp_b);
   del_matrix(part_c);
+  double t2 = MPI_Wtime();
+  printf("time on process %d: %lf\n", rank, t2 - t1);
   MPI_Finalize();
   return ret;
 }
