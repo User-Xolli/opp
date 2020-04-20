@@ -3,6 +3,7 @@
 #include <math.h>
 #include <mpi.h>
 
+#include "utility.h"
 #include "Matrix.h"
 
 static void example_matrix_a(struct Matrix a) {
@@ -47,7 +48,7 @@ int main(int argc, char **argv) {
   }
   if (rank == 0) {
     example_matrix_a(a);
-    share_matrix(a, size);
+    share_matrix_into_rows(a, size);
   }
   else {
     recv_matrix(a);
@@ -69,13 +70,17 @@ int main(int argc, char **argv) {
       del_matrix(b);
       return 1;
     }
-    share_matrix(b, size);
+    share_matrix_into_rows(b, size);
   }
   else {
     recv_matrix(b);
   }
   struct Matrix x;
-  if (create_matrix(&x, N, 1) < 0) {
+  unsigned int height_matrix_x = (rank == 0) ? N : N / size;
+  if (rank != 0 && rank == size - 1) {
+    height_matrix_x += N % size;
+  }
+  if (create_matrix(&x, height_matrix_x, 1) < 0) {
     perror("Memory limit. Program can't create matrix x\n");
     del_matrix(a);
     del_matrix(b);

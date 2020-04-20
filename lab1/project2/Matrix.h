@@ -11,9 +11,9 @@ struct Matrix {
   double *data;
 };
 
-int print_matrix(struct Matrix a);
-
 int create_matrix(struct Matrix *matrix, unsigned int height, unsigned int width);
+
+void zero_matrix(const struct Matrix a);
 
 int init_matrix(struct Matrix *matrix, FILE *in);
 
@@ -21,11 +21,11 @@ void del_matrix(struct Matrix matrix);
 
 int mult_matrix(struct Matrix a, struct Matrix b, struct Matrix result);
 
+int print_matrix(struct Matrix a);
+
 int solve(struct Matrix a, struct Matrix b, struct Matrix x, int size, int rank);
 
-void split_matrix_into_lines(struct Matrix matrix, const unsigned int count_lines, struct Matrix array[]);
-
-void share_matrix(struct Matrix m, int size);
+void share_matrix_into_rows(struct Matrix m, int size);
 
 void recv_matrix(struct Matrix m);
 
