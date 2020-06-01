@@ -137,7 +137,7 @@ void* loader (void* args) {
 
 // use only with task_mutex lock
 long take_task() {
-    if (tasks.size <= 0) {
+    if (tasks.size == 0) {
         return -1;
     }
     long task = tasks.data[--tasks.size];
