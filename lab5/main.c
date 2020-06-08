@@ -117,7 +117,7 @@ void* loader (void* args) {
                 MPI_Recv(&new_task, 1, MPI_LONG, proc, MPI_TAG_DATA, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
                 pthread_mutex_lock(&task_mutex);
                 if (add_elem(&tasks, new_task) != 0) {
-                    perror("Error allocate memory");
+                    perror("Error allocate memory (add_elem)");
                     pthread_mutex_unlock(&task_mutex);
                     return NULL;
                 }
@@ -235,7 +235,7 @@ int main(int argc, char **argv) {
     }
     have_tasks = true;
     if (create_vector(&tasks, DEFAULT_SIZE_BUFFER_TASKS) != 0) {
-        perror("Error allocate memory");
+        perror("Error allocate memory (create vector tasks)");
         return 1;
     }
     pthread_attr_t attrs;
